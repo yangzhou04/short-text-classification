@@ -2,7 +2,6 @@ package model;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.PrintStream;
 import java.util.Set;
 
 import com.aliasi.classify.Classified;
@@ -118,6 +117,8 @@ public class NaiveBayesClassifier {
 
     public static void main(String[] args) throws IOException,
             ClassNotFoundException {
+        
+        
 
         // Train a initial Naive Bayesian classifier
         // read from memory
@@ -198,36 +199,36 @@ public class NaiveBayesClassifier {
         // /////////////////
         // read from corpus
 
-        try {
-            System.setOut(new PrintStream(new File("detail_result.txt")));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+//        try {
+//            System.setOut(new PrintStream(new File("detail_result.txt")));
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
 
         //
         // data_root_directory
         // |---- part directory (1-9, 2-8, 3-7 ...)
         // |-----|--- percent directory (0.1, 0.2, 0.3 ... 1.0)
         // |-----|----|--- feature type directory (ig, mi, ti)
-        File dataDir = new File("C:\\cygwin\\home\\Mark\\tokenization.new");
-        File[] partDirs = dataDir.listFiles();
-        for (int i = 0; i < partDirs.length; i++) {
-            File part = partDirs[i];
-
-            File[] featTypeDirs = part.listFiles();
-            for (int j = 0; j < featTypeDirs.length; j++) {
-                File typeDir = featTypeDirs[j];
-
-                if (typeDir.isDirectory()) {
-                    File[] percentDirs = typeDir.listFiles();
-                    for (int k = 0; k < percentDirs.length; k++) {
-                        System.out.println("\n\n"
-                                + percentDirs[k].getAbsolutePath());
-                        go(percentDirs[k].getAbsolutePath());
-                    }
-                }
-            }
-        }
+//        File dataDir = new File("C:\\cygwin\\home\\Mark\\tokenization.new");
+//        File[] partDirs = dataDir.listFiles();
+//        for (int i = 0; i < partDirs.length; i++) {
+//            File part = partDirs[i];
+//
+//            File[] featTypeDirs = part.listFiles();
+//            for (int j = 0; j < featTypeDirs.length; j++) {
+//                File typeDir = featTypeDirs[j];
+//
+//                if (typeDir.isDirectory()) {
+//                    File[] percentDirs = typeDir.listFiles();
+//                    for (int k = 0; k < percentDirs.length; k++) {
+//                        System.out.println("\n\n"
+//                                + percentDirs[k].getAbsolutePath());
+//                        go(percentDirs[k].getAbsolutePath());
+//                    }
+//                }
+//            }
+//        }
 
         // System.out.println("\n\n\n========== 2-8 =============");
         // go(".\\data\\abstract\\2-8");
