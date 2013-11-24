@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.PrintStream;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -98,8 +99,9 @@ public class InformationGain {
                 s += x;
             }
         }
-        System.out.println(s);
-        assert s == 1;
+
+        assert Math.abs(Double.doubleToLongBits(s) -
+                    Double.doubleToLongBits(1)) <= 2;
         return -e;
     }
 
@@ -131,27 +133,31 @@ public class InformationGain {
             for (Iterator<String> clazz = classes.iterator(); clazz.hasNext();) {
                 String c = clazz.next();
                 System.out.println("Processing ..." + c + " " + t);
-                // ci中出现t的文档数
                 assert ctMap.containsKey(c);
-                if (ctMap.get(c).containsKey(t)) {
-                    int docNumInCContainT = ctMap.get(c).get(t);
-                    // P(c_i | t)
-                    double ciGivent = docNumInCContainT / (double) docNumContainT;
-                    ciGivenTList.add(ciGivent);
-                    // ci中的文档数
-                    int docNumInC = cMap.get(c);
-                    // ci中没出现t的文档数
-                    int docNumInCNotContainT = docNumInC - docNumInCContainT;
-
-                    // P(c_i | not t)
-                    double ciGivenNT = docNumInCNotContainT / (double) docNumNotContainT;
-                    ciGivenNTList.add(ciGivenNT);
-                } else {
-                    ciGivenTList.add(0d);
-                    ciGivenNTList.add(1d);
-                    System.out.println("class = " + c +" <-> term =  "+ t);
+                // ci中出现t的文档数
+                int docNumInCContainT;
+                if (ctMap.get(c).containsKey(t))
+                    docNumInCContainT = ctMap.get(c).get(t);
+                else {
+                    docNumInCContainT = 0;
+                    System.out.println("class = " + c + " <-> term =  " + t);
                 }
+                // ci中的文档数
+                int docNumInC = cMap.get(c);
+
+                // P(c_i | t)
+                double ciGivent = docNumInCContainT / (double) docNumContainT;
+                ciGivenTList.add(ciGivent);
+
+                // ci中没出现t的文档数
+                int docNumInCNotContainT = docNumInC - docNumInCContainT;
+                // P(c_i | not t)
+                double ciGivenNT = docNumInCNotContainT
+                        / (double) docNumNotContainT;
+                ciGivenNTList.add(ciGivenNT);
             }
+            assert ciGivenTList.size() == ciGivenNTList.size();
+            System.out.println("Size = " + ciGivenTList.size());
             ig -= pt * entropy(ciGivenTList);
             ig -= pnt * entropy(ciGivenNTList);
 
@@ -160,8 +166,12 @@ public class InformationGain {
     }
 
     public static void main(String[] args) throws IOException {
-        InformationGain ig = new InformationGain("./experiment/abstract/try/");
+        System.setOut(new PrintStream("./out.txt"));
+        InformationGain ig = new InformationGain("./experiment/abstract/train/");
         Map<String, Double> igMap = ig.get();
-        System.out.println(igMap);
+        for (Iterator<String> term = igMap.keySet().iterator(); term.hasNext();) {
+            String t = term.next();
+            System.out.println(t + ": " + igMap.get(t));
+        }
     }
 }
