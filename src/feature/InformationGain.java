@@ -6,8 +6,11 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -62,7 +65,7 @@ public class InformationGain {
                     cMap.put(c, 1);
 
                 String line = br.readLine();
-                String[] terms = line.split(" ");
+                String[] terms = line.split(",");
                 // term frequency statistics
                 Set<String> occured = new TreeSet<String>();
                 for (String t : terms) {
@@ -84,6 +87,7 @@ public class InformationGain {
             br.close();
         }
         calcInformationGain();
+        
     }
 
     public Map<String, Double> get() {
@@ -93,15 +97,17 @@ public class InformationGain {
     private double entropy(List<Double> X) {
         double e = 0;
         double s = 0;
+
         for (double x : X) {
+            if (Double.isNaN(x))
+                return 0;
             if (Double.compare(x, 0) != 0) {
                 e += x * Math.log(x);
                 s += x;
             }
         }
-
-        assert Math.abs(Double.doubleToLongBits(s) -
-                    Double.doubleToLongBits(1)) <= 2;
+        assert Math.abs(Double.doubleToLongBits(s)
+                - Double.doubleToLongBits(1d)) <= 2;
         return -e;
     }
 
@@ -132,7 +138,7 @@ public class InformationGain {
             List<Double> ciGivenNTList = new LinkedList<Double>();
             for (Iterator<String> clazz = classes.iterator(); clazz.hasNext();) {
                 String c = clazz.next();
-                System.out.println("Processing ..." + c + " " + t);
+//                System.out.println("Processing ..." + c + " " + t);
                 assert ctMap.containsKey(c);
                 // ci中出现t的文档数
                 int docNumInCContainT;
@@ -140,7 +146,7 @@ public class InformationGain {
                     docNumInCContainT = ctMap.get(c).get(t);
                 else {
                     docNumInCContainT = 0;
-                    System.out.println("class = " + c + " <-> term =  " + t);
+//                    System.out.println("class = " + c + " <-> term =  " + t);
                 }
                 // ci中的文档数
                 int docNumInC = cMap.get(c);
@@ -157,19 +163,40 @@ public class InformationGain {
                 ciGivenNTList.add(ciGivenNT);
             }
             assert ciGivenTList.size() == ciGivenNTList.size();
-            System.out.println("Size = " + ciGivenTList.size());
+            // System.out.println("Size = " + ciGivenTList.size());
             ig -= pt * entropy(ciGivenTList);
             ig -= pnt * entropy(ciGivenNTList);
 
-            igMap.put(t, ig);
+            final int SCALER = 100;
+            igMap.put(t, ig * SCALER);
         }
+        igMap = sortByValue(igMap);
+    }
+
+    public <K, V extends Comparable<? super V>> Map<K, V> sortByValue(
+            Map<K, V> map) {
+        List<Map.Entry<K, V>> list = new LinkedList<Map.Entry<K, V>>(
+                map.entrySet());
+        Collections.sort(list, new Comparator<Map.Entry<K, V>>() {
+            public int compare(Map.Entry<K, V> o1, Map.Entry<K, V> o2) {
+                return -(o1.getValue()).compareTo(o2.getValue());
+            }
+        });
+
+        Map<K, V> result = new LinkedHashMap<K, V>();
+        for (Map.Entry<K, V> entry : list) {
+            result.put(entry.getKey(), entry.getValue());
+        }
+        return result;
     }
 
     public static void main(String[] args) throws IOException {
-        System.setOut(new PrintStream("./out.txt"));
+        System.setOut(new PrintStream("./ig_map.txt"));
         InformationGain ig = new InformationGain("./experiment/abstract/train/");
         Map<String, Double> igMap = ig.get();
-        for (Iterator<String> term = igMap.keySet().iterator(); term.hasNext();) {
+
+        for (Iterator<String> term = igMap.keySet().iterator(); term
+                .hasNext();) {
             String t = term.next();
             System.out.println(t + ": " + igMap.get(t));
         }
