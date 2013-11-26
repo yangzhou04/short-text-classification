@@ -70,7 +70,7 @@ public class NaiveBayesInstanceFormatWrapper {
                 for (TaggedWord taggedWord : tSentence) {
                     if (taggedWord.tag().equals("NN")
                             || taggedWord.tag().equals("VV")
-                     || taggedWord.tag().equals("JJ") ) {
+                            || taggedWord.tag().equals("JJ")) {
                         String tw = taggedWord.word().trim();
                         if (tw.length() > 1 && !tw.equals("-LRB-")
                                 && !tw.equals("-RRB-")) {
@@ -92,14 +92,16 @@ public class NaiveBayesInstanceFormatWrapper {
             }
         }
         br.close();
-        
+
         // write as csv file
         File csvFile = new File(opath, "batch.csv");
-        if (csvFile.exists()) csvFile.delete();
-        csvFile.getParentFile().mkdirs(); csvFile.createNewFile();
+        if (csvFile.exists())
+            csvFile.delete();
+        csvFile.getParentFile().mkdirs();
+        csvFile.createNewFile();
         BufferedWriter csvWriter = new BufferedWriter(new OutputStreamWriter(
                 new FileOutputStream(csvFile), "UTF-8"));
-        
+
         for (Iterator<String> iter = map.keySet().iterator(); iter.hasNext();) {
             String key = iter.next();
             List<List<String>> featList = map.get(key);
@@ -122,18 +124,12 @@ public class NaiveBayesInstanceFormatWrapper {
                     csvWriter.append(",");
                 }
                 bw.newLine();
+                csvWriter.append(key);
                 csvWriter.newLine();
             }
-            
             bw.close();
         }
-        
-        
-        
-        
-        
         csvWriter.close();
-
     }
 
     public void processUnlabelled(String csv, String opath) throws IOException {
@@ -204,13 +200,14 @@ public class NaiveBayesInstanceFormatWrapper {
         props.setProperty("inputEncoding", "UTF-8");
         props.setProperty("sighanPostProcessing", "true");
 
-        NaiveBayesInstanceFormatWrapper i2f = new NaiveBayesInstanceFormatWrapper(props);
-        i2f.processLabelled("./experiment/labeled.small.csv",
-                "./experiment/abstract/test");
-//        i2f.processLabelled("./experiment/lpart1.csv",
-//                "./experiment/abstract/test");
-//        i2f.processLabelled("./experiment/rpart1.csv",
-//                "./experiment/abstract/train");
+        NaiveBayesInstanceFormatWrapper i2f = new NaiveBayesInstanceFormatWrapper(
+                props);
+        i2f.processLabelled("./experiment/2class.csv",
+                "./experiment/abstract/train");
+        // i2f.processLabelled("./experiment/lpart1.csv",
+        // "./experiment/abstract/test");
+        // i2f.processLabelled("./experiment/rpart1.csv",
+        // "./experiment/abstract/train");
         // i2f.unlabeledFeatureSet("./experiment/ulabeled.csv",
         // "./experiment/abstract/unlabeledCorpus.txt");
     }

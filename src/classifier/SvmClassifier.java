@@ -6,7 +6,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.PrintStream;
 
 import weka.classifiers.functions.LibSVM;
 import weka.core.Instance;
@@ -50,9 +49,9 @@ public class SvmClassifier {
     }
 
     public static void main(String[] args) throws Exception {
-        System.setOut(new PrintStream("./svm.txt"));
+//        System.setOut(new PrintStream("./svm.txt"));
         DataSource source = new DataSource(
-                "./experiment/abstract/train-batch-full.arff");
+                "./experiment/abstract/2class_full.arff");
 //        System.out.println(source.getStructure());
         Instances data = source.getDataSet();
         if (data.classIndex() == -1)
@@ -72,7 +71,7 @@ public class SvmClassifier {
         }
 
         DataSource test = new DataSource(
-                "./experiment/abstract/train-batch-full.arff");
+                "./experiment/abstract/2class_full.arff");
         Instances testData = test.getDataSet();
         if (testData.classIndex() == -1)
             testData.setClassIndex(testData.numAttributes() - 1);
