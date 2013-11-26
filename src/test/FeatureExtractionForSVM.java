@@ -17,7 +17,15 @@ import java.util.TreeSet;
 import feature.InformationGain;
 
 public class FeatureExtractionForSVM {
+    
+    
+    
+    
     public static void main(String[] args) throws IOException {
+        
+        
+        
+        
         InformationGain ig = new InformationGain("./experiment/abstract/train/");
         Map<String, Double> igMap = ig.get();
         Set<String> vocabulary = igMap.keySet();
@@ -38,9 +46,12 @@ public class FeatureExtractionForSVM {
         csvFile.getParentFile().mkdirs(); csvFile.createNewFile();
         BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(
                 new FileOutputStream(csvFile), "UTF-8"));
+        int i = 1;
         for (Iterator<String> iterms = vocabulary.iterator(); iterms.hasNext();) {
             bw.append("'");
-            bw.append(iterms.next());
+//             bw.append(iterms.next());
+            
+            bw.append("att" + i++); iterms.next();
             bw.append("'");
             bw.append(",");
         }
@@ -58,16 +69,19 @@ public class FeatureExtractionForSVM {
                 String t = iterms.next(); 
                 
                 if (features.contains(t)) {
-                    bw.append(String.valueOf(igMap.get(t)));
+                    bw.append(String.valueOf(1));
+//                    bw.append(String.valueOf(igMap.get(t)));
                     bw.append(",");
                 }
                 else {
-//                    bw.append("0");
+                    bw.append("0");
                     bw.append(",");
                 }
             }
             bw.append("'");
-            bw.append(clazz);
+            
+//            for (byte b : clazz.getBytes("UTF-8"))
+                bw.append(clazz);
             bw.append("'");
             bw.newLine();
         }

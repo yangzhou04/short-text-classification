@@ -6,6 +6,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.PrintStream;
 
 import weka.classifiers.functions.LibSVM;
 import weka.core.Instance;
@@ -49,6 +50,7 @@ public class SvmClassifier {
     }
 
     public static void main(String[] args) throws Exception {
+        System.setOut(new PrintStream("./svm.txt"));
         DataSource source = new DataSource(
                 "./experiment/abstract/train-batch-full.arff");
 //        System.out.println(source.getStructure());
@@ -59,11 +61,11 @@ public class SvmClassifier {
         
         LibSVM svmClassifier = null;// = SvmClassifier.load("./svm.model");
         
-        String[] options = new String[1];
-        options[0] = "-V";
+        //String[] options = new String[1];
+       // options[0] = "-V";
         if (svmClassifier == null) {
             svmClassifier = new LibSVM();
-            svmClassifier.setOptions(options);
+            //svmClassifier.setOptions(options);
             System.out.println("start training... ");
             svmClassifier.buildClassifier(data);
             SvmClassifier.save(svmClassifier, "./svm.model");
@@ -74,13 +76,20 @@ public class SvmClassifier {
         Instances testData = test.getDataSet();
         if (testData.classIndex() == -1)
             testData.setClassIndex(testData.numAttributes() - 1);
+        int total = 0;
+        int right = 0;
         for (int i = 0; i < testData.numInstances(); i++) {
             Instance instance = testData.instance(i);
             System.out.print(testData.classAttribute().value((int) instance.classValue()) + " -- ");
             double result = svmClassifier.classifyInstance(instance);
-  //          System.out.print(result + " --- ");
+            System.out.print(result + " --- ");
             System.out.println(testData.classAttribute().value((int) result));
+            if (Double.compare(result, instance.classValue()) == 0)
+                right++;
+            total++;
         }
+        
+        System.out.println("accuracy = " + right / (double) total);
     }
 
 }
