@@ -28,7 +28,8 @@ public class SvmClassifier {
             System.out.println("Try to load model... from " + path);
             long startTime = System.currentTimeMillis();
             Object obj = in.readObject();
-            System.out.print("Load model done. " + (System.currentTimeMillis()-startTime)/1000 + "s");
+            System.out.print("Load model done. "
+                    + (System.currentTimeMillis() - startTime) / 1000 + "s");
             in.close();
             fileIn.close();
             if (obj instanceof LibSVM) {
@@ -49,22 +50,22 @@ public class SvmClassifier {
     }
 
     public static void main(String[] args) throws Exception {
-//        System.setOut(new PrintStream("./svm.txt"));
+        // System.setOut(new PrintStream("./svm.txt"));
         DataSource source = new DataSource(
                 "./experiment/abstract/2class_full.arff");
-//        System.out.println(source.getStructure());
+        // System.out.println(source.getStructure());
         Instances data = source.getDataSet();
         if (data.classIndex() == -1)
             data.setClassIndex(data.numAttributes() - 1);
         System.out.println(data.classIndex());
-        
+
         LibSVM svmClassifier = null;// = SvmClassifier.load("./svm.model");
-        
-        //String[] options = new String[1];
-       // options[0] = "-V";
+
+        // String[] options = new String[1];
+        // options[0] = "-V";
         if (svmClassifier == null) {
             svmClassifier = new LibSVM();
-            //svmClassifier.setOptions(options);
+            // svmClassifier.setOptions(options);
             System.out.println("start training... ");
             svmClassifier.buildClassifier(data);
             SvmClassifier.save(svmClassifier, "./svm.model");
@@ -79,7 +80,9 @@ public class SvmClassifier {
         int right = 0;
         for (int i = 0; i < testData.numInstances(); i++) {
             Instance instance = testData.instance(i);
-            System.out.print(testData.classAttribute().value((int) instance.classValue()) + " -- ");
+            System.out.print(testData.classAttribute().value(
+                    (int) instance.classValue())
+                    + " -- ");
             double result = svmClassifier.classifyInstance(instance);
             System.out.print(result + " --- ");
             System.out.println(testData.classAttribute().value((int) result));
@@ -87,7 +90,7 @@ public class SvmClassifier {
                 right++;
             total++;
         }
-        
+
         System.out.println("accuracy = " + right / (double) total);
     }
 

@@ -184,15 +184,16 @@ public class EMNaiveBayesClassifier implements Serializable {
             ClassNotFoundException {
         // System.setOut(new PrintStream("./debug.txt"));
 
-//        String storedModelPath = "./emnbc.model";
-//        EMNaiveBayesClassifier emnbc = EMNaiveBayesClassifier
-//                .load(storedModelPath);
-//        if (emnbc == null) {
-        EMNaiveBayesClassifier emnbc = new EMNaiveBayesClassifier("./experiment/abstract/train",
-                    "./experiment/abstract/unlabeledCorpus-min2.txt");
-            emnbc.train();
-//            EMNaiveBayesClassifier.save(emnbc, storedModelPath);
-//        }
+        // String storedModelPath = "./emnbc.model";
+        // EMNaiveBayesClassifier emnbc = EMNaiveBayesClassifier
+        // .load(storedModelPath);
+        // if (emnbc == null) {
+        EMNaiveBayesClassifier emnbc = new EMNaiveBayesClassifier(
+                "./experiment/abstract/train",
+                "./experiment/abstract/unlabeledCorpus-min2.txt");
+        emnbc.train();
+        // EMNaiveBayesClassifier.save(emnbc, storedModelPath);
+        // }
 
         // accuracy test
         File test = new File("./experiment/abstract/test");
@@ -205,11 +206,11 @@ public class EMNaiveBayesClassifier implements Serializable {
             while (br.ready()) {
                 String feat = br.readLine();
                 String predictLabel = emnbc.bestCategory(feat);
-//                System.out.println("\n" + feat);
-//                System.out.println(total + ": P = " + predictLabel + ": "
-//                        + emnbc.bestCategoryProbability(feat) + " -- T = "
-//                        + trueLabel);
-//                emnbc.printAllCategoryProb(feat);
+                // System.out.println("\n" + feat);
+                // System.out.println(total + ": P = " + predictLabel + ": "
+                // + emnbc.bestCategoryProbability(feat) + " -- T = "
+                // + trueLabel);
+                // emnbc.printAllCategoryProb(feat);
                 if (trueLabel.equals(predictLabel))
                     c++;
                 total++;
@@ -219,8 +220,8 @@ public class EMNaiveBayesClassifier implements Serializable {
 
         System.out.println((double) c / total);
 
-//        System.out.println("\n\n\n\n=================================================");
-//        emnbc.printWordProb();
+        // System.out.println("\n\n\n\n=================================================");
+        // emnbc.printWordProb();
         // String feat =
         // "利用 永磁体 传动 装置 属于 机械 传动 技术 领域 利用 永磁体 磁力 机械 直线 运动 转换 转动 机械 装置 包括 动力 输出 部分 驱动 部分 其中 动力 输出 部分 具有 支承 轴承 主轴 主轴 表面 螺旋状 吸片 驱动 具有 导轮 外力 拖动 传动带 磁体 固定 传动带 表面 工作区 传动 主轴 永磁体 吸片 具有 间隙 相邻 永磁体 间距 等于 主轴 吸片 螺旋 螺距 使用 可以 直线 运动 转换 主轴 转动 装置 用于 机械 技术 领域 改变 机械 运动 状态 ";
         // System.out.println(emnbc.bestCategory(feat) + ": "

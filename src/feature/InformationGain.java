@@ -87,7 +87,7 @@ public class InformationGain {
             br.close();
         }
         calcInformationGain();
-        
+
     }
 
     public Map<String, Double> get() {
@@ -138,7 +138,7 @@ public class InformationGain {
             List<Double> ciGivenNTList = new LinkedList<Double>();
             for (Iterator<String> clazz = classes.iterator(); clazz.hasNext();) {
                 String c = clazz.next();
-//                System.out.println("Processing ..." + c + " " + t);
+                // System.out.println("Processing ..." + c + " " + t);
                 assert ctMap.containsKey(c);
                 // ci中出现t的文档数
                 int docNumInCContainT;
@@ -146,7 +146,7 @@ public class InformationGain {
                     docNumInCContainT = ctMap.get(c).get(t);
                 else {
                     docNumInCContainT = 0;
-//                    System.out.println("class = " + c + " <-> term =  " + t);
+                    // System.out.println("class = " + c + " <-> term =  " + t);
                 }
                 // ci中的文档数
                 int docNumInC = cMap.get(c);
@@ -195,8 +195,7 @@ public class InformationGain {
         InformationGain ig = new InformationGain("./experiment/abstract/train/");
         Map<String, Double> igMap = ig.get();
 
-        for (Iterator<String> term = igMap.keySet().iterator(); term
-                .hasNext();) {
+        for (Iterator<String> term = igMap.keySet().iterator(); term.hasNext();) {
             String t = term.next();
             System.out.println(t + ": " + igMap.get(t));
         }
