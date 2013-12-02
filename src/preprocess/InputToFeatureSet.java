@@ -67,7 +67,7 @@ public class InputToFeatureSet {
                 for (TaggedWord taggedWord : tSentence) {
                     if (taggedWord.tag().equals("NN")
                             || taggedWord.tag().equals("VV")
-                            /*|| taggedWord.tag().equals("JJ")*/) {
+                    /* || taggedWord.tag().equals("JJ") */) {
                         String tw = taggedWord.word().trim();
                         if (tw.length() > 1 && !tw.equals("-LRB-")
                                 && !tw.equals("-RRB-")) {
@@ -149,7 +149,8 @@ public class InputToFeatureSet {
                             || taggedWord.tag().equals("VV")
                     /* || taggedWord.tag().equals("JJ") */) {
                         String tw = taggedWord.word().trim();
-                        if (tw.length()>1 && !tw.equals("-LRB-") && !tw.equals("-RRB-")) {
+                        if (tw.length() > 1 && !tw.equals("-LRB-")
+                                && !tw.equals("-RRB-")) {
                             Matcher m = p.matcher(tw);
                             if (!m.matches())
                                 feat.add(tw);
@@ -183,11 +184,11 @@ public class InputToFeatureSet {
         props.setProperty("sighanPostProcessing", "true");
 
         InputToFeatureSet i2f = new InputToFeatureSet(props);
-//        i2f.labeledFeatureSet("./experiment/lpart1.csv",
-//                "./experiment/abstract/test");
-//        i2f.labeledFeatureSet("./experiment/rpart1.csv",
-//                "./experiment/abstract/train");
-         i2f.unlabeledFeatureSet("./experiment/ulabeled.csv",
-         "./experiment/abstract/unlabeledCorpus.txt");
+        // i2f.labeledFeatureSet("./experiment/lpart1.csv",
+        // "./experiment/abstract/test");
+        // i2f.labeledFeatureSet("./experiment/rpart1.csv",
+        // "./experiment/abstract/train");
+        i2f.unlabeledFeatureSet("./experiment/ulabeled.csv",
+                "./experiment/abstract/unlabeledCorpus.txt");
     }
 }
