@@ -20,20 +20,16 @@ import java.util.TreeSet;
 public class InformationGain {
 
     private int docNum = 0;
-    private Map<String, Integer> tMap; // document frequency that term occurs
+    private Map<String, Integer> dMap; // document frequency that term occurs
     private Map<String, Map<String, Integer>> ctMap; // class, term frequency
     private Map<String, Integer> cMap; // class frequency
     private Map<String, Double> igMap; // ig of each term
 
-    public InformationGain() {
-        tMap = new HashMap<String, Integer>();
+    public InformationGain(String dir) throws IOException {
+        dMap = new HashMap<String, Integer>();
         cMap = new HashMap<String, Integer>();
         ctMap = new HashMap<String, Map<String, Integer>>();
         igMap = new HashMap<String, Double>();
-    }
-
-    public InformationGain(String dir) throws IOException {
-        this();
 
         File fdir = new File(dir);
         if (!fdir.isDirectory()) {
@@ -43,48 +39,50 @@ public class InformationGain {
 
         for (File cf : fdir.listFiles()) {
             String c = cf.getName();
-            BufferedReader br = new BufferedReader(new InputStreamReader(
-                    new FileInputStream(new File(cf, "labeledCorpus.txt")),
-                    "UTF-8"));
+            for (File f : cf.listFiles()) {
+                BufferedReader br = new BufferedReader(new InputStreamReader(
+                        new FileInputStream(f), "UTF-8"));
 
-            // term frequency of class c
-            Map<String, Integer> cttMap;
-            if (ctMap.containsKey(c))
-                cttMap = ctMap.get(c);
-            else {
-                cttMap = new HashMap<String, Integer>();
-                ctMap.put(c, cttMap);
-            }
+                // term frequency of class c
+                Map<String, Integer> cttMap;
+                if (ctMap.containsKey(c))
+                    cttMap = ctMap.get(c);
+                else {
+                    cttMap = new HashMap<String, Integer>();
+                    ctMap.put(c, cttMap);
+                }
 
-            while (br.ready()) {
-                docNum++;
-                // class frequency statistics
-                if (cMap.containsKey(c))
-                    cMap.put(c, cMap.get(c) + 1);
-                else
-                    cMap.put(c, 1);
+                while (br.ready()) {
+                    docNum++;
+                    // class frequency statistics
+                    if (cMap.containsKey(c))
+                        cMap.put(c, cMap.get(c) + 1);
+                    else
+                        cMap.put(c, 1);
 
-                String line = br.readLine();
-                String[] terms = line.split(",");
-                // term frequency statistics
-                Set<String> occured = new TreeSet<String>();
-                for (String t : terms) {
-                    if (!occured.contains(t)) {
-                        if (tMap.containsKey(t))
-                            tMap.put(t, tMap.get(t) + 1);
-                        else
-                            tMap.put(t, 1);
+                    String line = br.readLine();
+                    String[] terms = line.split(" ");
+                    // term frequency statistics
+                    Set<String> occured = new TreeSet<String>();
+                    for (String t : terms) {
+                        if (!occured.contains(t)) {
+                            if (dMap.containsKey(t))
+                                dMap.put(t, dMap.get(t) + 1);
+                            else
+                                dMap.put(t, 1);
 
-                        if (cttMap.containsKey(t))
-                            cttMap.put(t, cttMap.get(t) + 1);
-                        else
-                            cttMap.put(t, 1);
+                            if (cttMap.containsKey(t))
+                                cttMap.put(t, cttMap.get(t) + 1);
+                            else
+                                cttMap.put(t, 1);
 
-                        occured.add(t);
+                            occured.add(t);
+                        }
                     }
                 }
+                br.close();
             }
-            br.close();
+
         }
         calcInformationGain();
 
@@ -121,14 +119,14 @@ public class InformationGain {
 
         double hc = entropy(pc);
 
-        Set<String> terms = tMap.keySet();
+        Set<String> terms = dMap.keySet();
         Set<String> classes = cMap.keySet();
         for (Iterator<String> term = terms.iterator(); term.hasNext();) {
             String t = term.next();
             double ig = hc;
 
             // 出现t的文档数
-            int docNumContainT = tMap.get(t);
+            int docNumContainT = dMap.get(t);
             // 没出现t的文档数
             int docNumNotContainT = docNum - docNumContainT;
             double pt = docNumContainT / (double) docNum;
@@ -167,8 +165,8 @@ public class InformationGain {
             ig -= pt * entropy(ciGivenTList);
             ig -= pnt * entropy(ciGivenNTList);
 
-            final int SCALER = 100;
-            igMap.put(t, ig * SCALER);
+            // final int SCALER = 100;
+            igMap.put(t, ig);
         }
         igMap = sortByValue(igMap);
     }
@@ -190,14 +188,22 @@ public class InformationGain {
         return result;
     }
 
-    public static void main(String[] args) throws IOException {
-        System.setOut(new PrintStream("./ig_map.txt"));
-        InformationGain ig = new InformationGain("./experiment/abstract/train/");
-        Map<String, Double> igMap = ig.get();
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
 
         for (Iterator<String> term = igMap.keySet().iterator(); term.hasNext();) {
             String t = term.next();
-            System.out.println(t + ": " + igMap.get(t));
+            sb.append(t);
+            sb.append(": ");
+            sb.append(igMap.get(t));
+            sb.append("\n");
         }
+        return sb.toString();
+    }
+
+    public static void main(String[] args) throws IOException {
+        System.setOut(new PrintStream("./exper/ig.txt"));
+        InformationGain ig = new InformationGain("./exper/abstracts/train/");
+        System.out.println(ig);
     }
 }
