@@ -5,3 +5,8 @@
 *.war
 *.ear
 /bin
+/data
+
+/exper
+.classpath
+.project

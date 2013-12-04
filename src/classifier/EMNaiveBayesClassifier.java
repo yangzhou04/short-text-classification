@@ -27,7 +27,7 @@ import com.aliasi.util.AbstractExternalizable;
 import com.aliasi.util.CollectionUtils;
 import com.aliasi.util.Factory;
 
-import corpus.LabeledCorpus;
+import corpus.TrainLabeledCorpus;
 import corpus.UnlabeledCorpus;
 
 public class EMNaiveBayesClassifier implements Serializable {
@@ -38,7 +38,7 @@ public class EMNaiveBayesClassifier implements Serializable {
     private int minImprovement;
     private final String DELIM = "\\P{Z}+";
 
-    private transient LabeledCorpus labeledCorpus;
+    private transient TrainLabeledCorpus labeledCorpus;
     private transient UnlabeledCorpus unlabeledCorpus;
 
     private TradNaiveBayesClassifier emClassifier;
@@ -54,12 +54,12 @@ public class EMNaiveBayesClassifier implements Serializable {
         this.maxIter = maxIter;
         this.minTokenCount = minTokenCount;
         this.minImprovement = minImprovement;
-        this.labeledCorpus = new LabeledCorpus(labeledDirectory);
+        this.labeledCorpus = new TrainLabeledCorpus(labeledDirectory);
         this.unlabeledCorpus = new UnlabeledCorpus(unlabeledDirectory);
     }
 
     public void train() throws IOException {
-        train(0.5, 0.1, Double.NaN);
+        train(0.005, 0.1, Double.NaN);
     }
 
     public void train(final double catPrior, final double tokPrior,
@@ -134,7 +134,7 @@ public class EMNaiveBayesClassifier implements Serializable {
 
     public double evaluate(String testPath) throws IOException,
             ClassNotFoundException {
-        Corpus<ObjectHandler<Classified<CharSequence>>> corpus = new LabeledCorpus(
+        Corpus<ObjectHandler<Classified<CharSequence>>> corpus = new TrainLabeledCorpus(
                 new File(testPath));
         String[] categories = emClassifier.categorySet().toArray(new String[0]);
         Arrays.sort(categories);
@@ -182,40 +182,41 @@ public class EMNaiveBayesClassifier implements Serializable {
 
     public static void main(String[] args) throws IOException,
             ClassNotFoundException {
-        // System.setOut(new PrintStream("./debug.txt"));
+        // System.setOut(new PrintStream("./exper/em.txt"));
 
         // String storedModelPath = "./emnbc.model";
         // EMNaiveBayesClassifier emnbc = EMNaiveBayesClassifier
         // .load(storedModelPath);
         // if (emnbc == null) {
         EMNaiveBayesClassifier emnbc = new EMNaiveBayesClassifier(
-                "./experiment/abstract/train",
-                "./experiment/abstract/unlabeledCorpus-min2.txt");
+                "./exper/abstracts/train", "./exper/unlabeled.seged.csv");
         emnbc.train();
         // EMNaiveBayesClassifier.save(emnbc, storedModelPath);
         // }
 
         // accuracy test
-        File test = new File("./experiment/abstract/test");
+        File test = new File("./exper/abstracts/test");
         int c = 0, total = 0;
         for (File cat : test.listFiles()) {
             String trueLabel = cat.getName();
-            BufferedReader br = new BufferedReader(new InputStreamReader(
-                    new FileInputStream(new File(cat, "labeledCorpus.txt")),
-                    "UTF-8"));
-            while (br.ready()) {
-                String feat = br.readLine();
-                String predictLabel = emnbc.bestCategory(feat);
-                // System.out.println("\n" + feat);
-                // System.out.println(total + ": P = " + predictLabel + ": "
-                // + emnbc.bestCategoryProbability(feat) + " -- T = "
-                // + trueLabel);
-                // emnbc.printAllCategoryProb(feat);
-                if (trueLabel.equals(predictLabel))
-                    c++;
-                total++;
+
+            for (File testFile : cat.listFiles()) {
+                BufferedReader br = new BufferedReader(new InputStreamReader(
+                        new FileInputStream(testFile), "UTF-8"));
+                while (br.ready()) {
+                    String feat = br.readLine();
+                    String predictLabel = emnbc.bestCategory(feat);
+                     System.out.println("\n" + feat);
+                     System.out.println(total + ": P = " + predictLabel + ": "
+                     + emnbc.bestCategoryProbability(feat) + " -- T = "
+                     + trueLabel);
+                     emnbc.printAllCategoryProb(feat);
+                    if (trueLabel.equals(predictLabel))
+                        c++;
+                    total++;
+                }
+                br.close();
             }
-            br.close();
         }
 
         System.out.println((double) c / total);

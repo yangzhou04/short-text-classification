@@ -15,17 +15,17 @@ import com.aliasi.tokenizer.RegExTokenizerFactory;
 import com.aliasi.tokenizer.TokenizerFactory;
 import com.aliasi.util.CollectionUtils;
 
-import corpus.LabeledCorpus;
+import corpus.TrainLabeledCorpus;
 
 public class NaiveBayesClassifier implements Serializable {
     private static final long serialVersionUID = 7388561872019002215L;
     private final String DELIM = "\\P{Z}+";
     private TradNaiveBayesClassifier classifier;
 
-    private transient LabeledCorpus labeledCorpus;
+    private transient TrainLabeledCorpus labeledCorpus;
 
     public NaiveBayesClassifier(String labeledDirectory) throws IOException {
-        this.labeledCorpus = new LabeledCorpus(labeledDirectory);
+        this.labeledCorpus = new TrainLabeledCorpus(labeledDirectory);
     }
     
     public void train() throws IOException {

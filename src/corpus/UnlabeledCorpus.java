@@ -1,9 +1,10 @@
 package corpus;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,11 +22,10 @@ public class UnlabeledCorpus extends
             throw new FileNotFoundException();
 
         unlabeledCorpusList = new ArrayList<String>();
-        BufferedReader br = new BufferedReader(new FileReader(
-                unlabeledCorpusFile));
-        while (br.ready()) {
+        BufferedReader br = new BufferedReader(new InputStreamReader(
+                new FileInputStream(unlabeledCorpusFile), "UTF-8"));
+        while (br.ready())
             unlabeledCorpusList.add(br.readLine());
-        }
         br.close();
     }
 
