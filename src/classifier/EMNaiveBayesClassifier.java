@@ -11,7 +11,9 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
 
 import com.aliasi.classify.Classified;
@@ -59,7 +61,7 @@ public class EMNaiveBayesClassifier implements Serializable {
     }
 
     public void train() throws IOException {
-        train(0.005, 0.1, Double.NaN);
+        train(100, 0.1, 5);
     }
 
     public void train(final double catPrior, final double tokPrior,
@@ -180,23 +182,27 @@ public class EMNaiveBayesClassifier implements Serializable {
         }
     }
 
+    
+    
+    
+    
     public static void main(String[] args) throws IOException,
             ClassNotFoundException {
         // System.setOut(new PrintStream("./exper/em.txt"));
-
-        // String storedModelPath = "./emnbc.model";
-        // EMNaiveBayesClassifier emnbc = EMNaiveBayesClassifier
-        // .load(storedModelPath);
-        // if (emnbc == null) {
-        EMNaiveBayesClassifier emnbc = new EMNaiveBayesClassifier(
-                "./exper/abstracts/train", "./exper/unlabeled.seged.csv");
-        emnbc.train();
-        // EMNaiveBayesClassifier.save(emnbc, storedModelPath);
-        // }
+        String storedModelPath = "";
+        EMNaiveBayesClassifier emnbc = EMNaiveBayesClassifier
+                .load(storedModelPath);
+        if (emnbc == null) {
+            emnbc = new EMNaiveBayesClassifier("./exper/abstracts/train",
+                    "./exper/empty.csv");
+            emnbc.train();
+//             EMNaiveBayesClassifier.save(emnbc, storedModelPath);
+        }
 
         // accuracy test
+        Map<String, Integer> counter = new HashMap<String, Integer>();
         File test = new File("./exper/abstracts/test");
-        int c = 0, total = 0;
+        int c = 0, total = 0, ignore = 0;
         for (File cat : test.listFiles()) {
             String trueLabel = cat.getName();
 
@@ -205,37 +211,38 @@ public class EMNaiveBayesClassifier implements Serializable {
                         new FileInputStream(testFile), "UTF-8"));
                 while (br.ready()) {
                     String feat = br.readLine();
-                    String predictLabel = emnbc.bestCategory(feat);
-                     System.out.println("\n" + feat);
-                     System.out.println(total + ": P = " + predictLabel + ": "
-                     + emnbc.bestCategoryProbability(feat) + " -- T = "
-                     + trueLabel);
-                     emnbc.printAllCategoryProb(feat);
-                    if (trueLabel.equals(predictLabel))
-                        c++;
-                    total++;
+                    double p = emnbc.bestCategoryProbability(feat);
+                    if (p > 0.55) {
+                        String predictLabel = emnbc.bestCategory(feat);
+                        if (counter.containsKey(predictLabel))
+                            counter.put(predictLabel, counter.get(predictLabel)+1);
+                        else
+                            counter.put(predictLabel, 1);
+                        System.out.println("\n" + feat);
+                        System.out.println(total + ": P = " + predictLabel
+                                + ": " + emnbc.bestCategoryProbability(feat)
+                                + " -- T = " + trueLabel);
+                        emnbc.printAllCategoryProb(feat);
+                        if (trueLabel.equals(predictLabel))
+                            c++;
+                        total++;
+                    } else {
+                        ignore++;
+                    }
                 }
                 br.close();
             }
         }
+        
+        System.out.println("Class priority = ");
+        emnbc.printCatProb();
 
+//        System.out.println(counter);
+        System.out.println("Ignored: " + ignore);
+        System.out.println("Totoal: = " + total);
+        System.out.println("================");
+        System.out.print("Average accrucy = ");
         System.out.println((double) c / total);
-
-        // System.out.println("\n\n\n\n=================================================");
-        // emnbc.printWordProb();
-        // String feat =
-        // "利用 永磁体 传动 装置 属于 机械 传动 技术 领域 利用 永磁体 磁力 机械 直线 运动 转换 转动 机械 装置 包括 动力 输出 部分 驱动 部分 其中 动力 输出 部分 具有 支承 轴承 主轴 主轴 表面 螺旋状 吸片 驱动 具有 导轮 外力 拖动 传动带 磁体 固定 传动带 表面 工作区 传动 主轴 永磁体 吸片 具有 间隙 相邻 永磁体 间距 等于 主轴 吸片 螺旋 螺距 使用 可以 直线 运动 转换 主轴 转动 装置 用于 机械 技术 领域 改变 机械 运动 状态 ";
-        // System.out.println(emnbc.bestCategory(feat) + ": "
-        // + emnbc.bestCategoryProbability(feat));
-        // emnbc.printAllCategoryProb(feat);
-
-        // emnbc.printCatProb();
-        // emnbc.printWordProb(feat);
-
-        // System.out.println("========================================");
-        // String s = "电动机";
-        // System.out.println(emnbc.bestCategory(s) + ": "
-        // + emnbc.bestCategoryProbability(s));
     }
 
 }

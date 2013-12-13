@@ -20,7 +20,10 @@ import edu.stanford.nlp.ling.Word;
 
 public class SegmentText {
 
+    private static Set<String> stopwordSet = new TreeSet<String>();
+
     public static void segmentLabeled2() throws IOException {
+
         BufferedReader in = new BufferedReader(new InputStreamReader(
                 new FileInputStream("./exper/labeled2.csv"), "UTF-8"));
         File f = new File("./exper/labeled2.seged.csv");
@@ -50,10 +53,12 @@ public class SegmentText {
                 List<Word> words = seg.segmentSentence(fullText);
                 List<TaggedWord> taggedWords = tagger.tagSentence(words);
                 for (TaggedWord word : taggedWords) {
-                    if (word.word().length() > 1 && pos.contains(word.tag())) {
+//                    if (word.word().length() > 1 && pos.contains(word.tag())) {
+                    if (!stopwordSet.contains(word.word()) && !word.tag().equals("PU")) {
                         out.append(word.word());
                         out.append(" ");
                     }
+//                    }
                 }
                 out.append("\t");
                 out.append(clazz);
@@ -66,21 +71,18 @@ public class SegmentText {
         in.close();
     }
     
-    
     public static void segmentLabeled() throws IOException {
         BufferedReader in = new BufferedReader(new InputStreamReader(
-                new FileInputStream("./exper/labeled.csv"), "UTF-8"));
+                new FileInputStream("./exper/labeled.clean.csv"), "UTF-8"));
         File f = new File("./exper/labeled.seged.csv");
         if (!f.exists()) f.createNewFile();
         else System.err.println("Warning: " + f + " exists, overwriting happens");
+        
         BufferedWriter out = new BufferedWriter(new OutputStreamWriter(
                 new FileOutputStream(f), "UTF-8"));
 
         Segmenter seg = new Segmenter();
         Tagger tagger = new Tagger();
-        Set<String> pos = new TreeSet<String>();
-        pos.add("NN");
-        pos.add("VV");
         while (in.ready()) {
             String line = in.readLine();
             String[] splits = line.split("\t");
@@ -95,7 +97,7 @@ public class SegmentText {
                 List<Word> words = seg.segmentSentence(text);
                 List<TaggedWord> taggedWords = tagger.tagSentence(words);
                 for (TaggedWord word : taggedWords) {
-                    if (word.word().length() > 1 && pos.contains(word.tag())) {
+                    if(!stopwordSet.contains(word.word()) && !word.tag().equals("PU")) {
                         out.append(word.word());
                         out.append(" ");
                     }
@@ -113,7 +115,7 @@ public class SegmentText {
 
     public static void segmentUnlabeled() throws IOException {
         BufferedReader in = new BufferedReader(new InputStreamReader(
-                new FileInputStream("./exper/ulabeled.csv"), "UTF-8"));
+                new FileInputStream("./exper/ulabeled.clean.csv"), "UTF-8"));
         File f = new File("./exper/unlabeled.seged.csv");
         if (!f.exists())
             f.createNewFile();
@@ -122,19 +124,15 @@ public class SegmentText {
 
         Segmenter seg = new Segmenter();
         Tagger tagger = new Tagger();
-        Set<String> pos = new TreeSet<String>();
-        pos.add("NN");
-        pos.add("VV");
         while (in.ready()) {
             String text = in.readLine();
-            text = text.replaceAll(TextFilter.DIGIT, "")
-                    .replaceAll(TextFilter.PARENTHESIS, "")
+            text = text.replaceAll(TextFilter.PARENTHESIS, "")
                     .replaceAll(TextFilter.SPACE, "")
                     .replaceAll(TextFilter.EQUATION_TAG, "");
             List<Word> words = seg.segmentSentence(text);
             List<TaggedWord> taggedWords = tagger.tagSentence(words);
             for (TaggedWord word : taggedWords) {
-                if (word.word().length() > 1 && pos.contains(word.tag())) {
+                if (!stopwordSet.contains(word.word()) && !word.tag().equals("PU")) {
                     out.append(word.word());
                     out.append(" ");
                 }
@@ -145,8 +143,30 @@ public class SegmentText {
         in.close();
     }
 
+    public static String extractFeatur(Segmenter seg, Tagger tagger, String text) {
+        text = text.replaceAll(TextFilter.PARENTHESIS, "")
+                .replaceAll(TextFilter.SPACE, "")
+                .replaceAll(TextFilter.EQUATION_TAG, "");
+        List<Word> words = seg.segmentSentence(text);
+        List<TaggedWord> taggedWords = tagger.tagSentence(words);
+        StringBuilder sb = new StringBuilder();
+        for (TaggedWord word : taggedWords) {
+            if (!stopwordSet.contains(word.word()) && !word.tag().equals("PU")) {
+                sb.append(word.word());
+                sb.append(" ");
+            }
+        }
+        return sb.toString();
+    }
+    
     public static void main(String[] args) throws IOException {
-        segmentLabeled2();
+        BufferedReader stopwordReader = new BufferedReader(new InputStreamReader(
+                new FileInputStream("./exper/stopwords.txt"), "UTF-8"));
+        while (stopwordReader.ready())
+            stopwordSet.add(stopwordReader.readLine().trim());
+        stopwordReader.close();
+//        segmentLabeled();
+//        System.out.println("starting unlabled");
 //        segmentUnlabeled();
     }
 

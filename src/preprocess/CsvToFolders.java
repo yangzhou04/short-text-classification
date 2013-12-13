@@ -76,7 +76,9 @@ public class CsvToFolders {
     }
     
     public static void main(String[] args) throws IOException {
-        CsvToFolders c2f = new CsvToFolders("./exper/labeled2.seged.csv");
-        c2f.save("./exper/abstracts/test/");
+        CsvToFolders c2f = new CsvToFolders("./exper/train.csv");
+        c2f.save("./exper/abstracts/train/");
+        CsvToFolders c2f2 = new CsvToFolders("./exper/test.csv");
+        c2f2.save("./exper/abstracts/test/");
     }
 }
