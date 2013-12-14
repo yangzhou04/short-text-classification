@@ -1,4 +1,4 @@
-package test;
+package analysis;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;

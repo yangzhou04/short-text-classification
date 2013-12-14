@@ -14,7 +14,7 @@ import java.util.List;
 
 public class Sampler {
 
-    public void sampler(String csv, String test, String train, double percent)
+    public static void sample(String csv, String test, String train, double percent)
             throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(
                 new FileInputStream(csv), "UTF-8"));
@@ -48,8 +48,7 @@ public class Sampler {
     }
 
     public static void main(String[] args) throws IOException {
-        Sampler s = new Sampler();
-        s.sampler("./exper/labeled.seged.csv", "./exper/test.csv",
-                "./exper/train.csv", 0.4);
+        Sampler.sample("exper/labeled/labeled.old.clean.seged.csv", 
+                "./exper/exper1_test.csv", "./exper/exper1_train.csv", 0.2);
     }
 }

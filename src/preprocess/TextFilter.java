@@ -13,7 +13,7 @@ public class TextFilter {
 
     public static final String PARENTHESIS = "(\\(|\\[|\\（).*?(\\)|\\]|\\）)";
     public static final String DIGIT = "\\d";
-    public static final String ALPHA = "\\w";
+    public static final String ALPHA = "[a-zA-Z]";
     public static final String SPACE = " *";
     public static final String EQUATION_TAG = "<.*?>";
 

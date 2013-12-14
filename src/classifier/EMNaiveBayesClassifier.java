@@ -47,7 +47,9 @@ public class EMNaiveBayesClassifier implements Serializable {
 
     public EMNaiveBayesClassifier(String labeledDirectory,
             String unlabeledDirectory) throws IOException {
-        this(labeledDirectory, unlabeledDirectory, 100, 2, Integer.MAX_VALUE);
+        this(labeledDirectory, unlabeledDirectory, 100, // maximum iteration
+                2,// minimum token count 
+                0); // minimum improvment
     }
 
     public EMNaiveBayesClassifier(String labeledDirectory,
@@ -182,10 +184,6 @@ public class EMNaiveBayesClassifier implements Serializable {
         }
     }
 
-    
-    
-    
-    
     public static void main(String[] args) throws IOException,
             ClassNotFoundException {
         // System.setOut(new PrintStream("./exper/em.txt"));
@@ -193,15 +191,15 @@ public class EMNaiveBayesClassifier implements Serializable {
         EMNaiveBayesClassifier emnbc = EMNaiveBayesClassifier
                 .load(storedModelPath);
         if (emnbc == null) {
-            emnbc = new EMNaiveBayesClassifier("./exper/abstracts/train",
-                    "./exper/empty.csv");
+            emnbc = new EMNaiveBayesClassifier("exper/abstracts/exper3/train",
+                    "exper/empty.csv");
             emnbc.train();
-//             EMNaiveBayesClassifier.save(emnbc, storedModelPath);
+            // EMNaiveBayesClassifier.save(emnbc, storedModelPath);
         }
 
         // accuracy test
         Map<String, Integer> counter = new HashMap<String, Integer>();
-        File test = new File("./exper/abstracts/test");
+        File test = new File("exper/abstracts/exper3/test");
         int c = 0, total = 0, ignore = 0;
         for (File cat : test.listFiles()) {
             String trueLabel = cat.getName();
@@ -212,17 +210,18 @@ public class EMNaiveBayesClassifier implements Serializable {
                 while (br.ready()) {
                     String feat = br.readLine();
                     double p = emnbc.bestCategoryProbability(feat);
-                    if (p > 0.55) {
+                    if (p > 0.75) {
                         String predictLabel = emnbc.bestCategory(feat);
                         if (counter.containsKey(predictLabel))
-                            counter.put(predictLabel, counter.get(predictLabel)+1);
+                            counter.put(predictLabel,
+                                    counter.get(predictLabel) + 1);
                         else
                             counter.put(predictLabel, 1);
-                        System.out.println("\n" + feat);
-                        System.out.println(total + ": P = " + predictLabel
-                                + ": " + emnbc.bestCategoryProbability(feat)
-                                + " -- T = " + trueLabel);
-                        emnbc.printAllCategoryProb(feat);
+//                        System.out.println("\n" + feat);
+//                        System.out.println(total + ": P = " + predictLabel
+//                                + ": " + emnbc.bestCategoryProbability(feat)
+//                                + " -- T = " + trueLabel);
+//                        emnbc.printAllCategoryProb(feat);
                         if (trueLabel.equals(predictLabel))
                             c++;
                         total++;
@@ -233,11 +232,10 @@ public class EMNaiveBayesClassifier implements Serializable {
                 br.close();
             }
         }
-        
+
         System.out.println("Class priority = ");
         emnbc.printCatProb();
-
-//        System.out.println(counter);
+        System.out.println(counter);
         System.out.println("Ignored: " + ignore);
         System.out.println("Totoal: = " + total);
         System.out.println("================");

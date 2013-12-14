@@ -22,10 +22,17 @@ import java.util.Map;
 public class CsvToFolders {
 
     private Map<String, List<String>> catToTexts;
+    private String mSource;
+    private String mDest;
     
-    public CsvToFolders(String csv) throws IOException {
+    public CsvToFolders(String src, String dst) throws IOException {
+        mSource = src;
+        mDest = dst;
+    }
+    
+    public void translate() throws IOException {
         BufferedReader in = new BufferedReader(new InputStreamReader(
-                new FileInputStream(csv), "UTF-8"));
+                new FileInputStream(mSource), "UTF-8"));
         catToTexts = new HashMap<String, List<String>>();
         while (in.ready()) {
             String line = in.readLine();
@@ -46,17 +53,11 @@ public class CsvToFolders {
             }
         }
         in.close();
-    }
-    
-    public Map<String, List<String>> getCatToTexts() {
-        return catToTexts;
-    }
-    
-    public void save(String dst) throws IOException {
+        
         for (Iterator<String> iter = catToTexts.keySet().iterator();
                 iter.hasNext();) {
             String cat = iter.next();
-            File catDir = new File(dst, cat);
+            File catDir = new File(mDest, cat);
             if (!catDir.exists()) catDir.mkdirs();
             else System.err.println("Warning: " + catDir + " exists, overwriting happens");
             
@@ -75,10 +76,17 @@ public class CsvToFolders {
         }
     }
     
+    public Map<String, List<String>> getCatToTexts() {
+        return catToTexts;
+    }
+    
+    
     public static void main(String[] args) throws IOException {
-        CsvToFolders c2f = new CsvToFolders("./exper/train.csv");
-        c2f.save("./exper/abstracts/train/");
-        CsvToFolders c2f2 = new CsvToFolders("./exper/test.csv");
-        c2f2.save("./exper/abstracts/test/");
+        CsvToFolders trainTranslate = new CsvToFolders("exper/exper3/exper3_train.csv", 
+                "exper/abstracts/exper3/train");
+        trainTranslate.translate();
+        CsvToFolders testTranslate = new CsvToFolders("exper/exper3/exper3_test.csv", 
+                "exper/abstracts/exper3/test");
+        testTranslate.translate();
     }
 }
