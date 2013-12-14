@@ -15,17 +15,18 @@ import com.aliasi.tokenizer.RegExTokenizerFactory;
 import com.aliasi.tokenizer.TokenizerFactory;
 import com.aliasi.util.CollectionUtils;
 
-import corpus.TrainLabeledCorpus;
+import corpus.LabeledCorpus;
 
 public class NaiveBayesClassifier implements Serializable {
     private static final long serialVersionUID = 7388561872019002215L;
     private final String DELIM = "\\P{Z}+";
     private TradNaiveBayesClassifier classifier;
 
-    private transient TrainLabeledCorpus labeledCorpus;
+    private transient LabeledCorpus labeledCorpus;
 
     public NaiveBayesClassifier(String labeledDirectory) throws IOException {
-        this.labeledCorpus = new TrainLabeledCorpus(labeledDirectory);
+        this.labeledCorpus = new LabeledCorpus(new File(labeledDirectory, "train"),
+                new File(labeledDirectory, "test"));
     }
     
     public void train() throws IOException {
@@ -36,8 +37,8 @@ public class NaiveBayesClassifier implements Serializable {
             final double lengthNorm) throws IOException {
         // train initial classifier
         final String[] CATEGORIES = labeledCorpus.getCatogories();
-        TokenizerFactory tf = new RegExTokenizerFactory(DELIM);
         Set<String> catSet = CollectionUtils.asSet(CATEGORIES);
+        TokenizerFactory tf = new RegExTokenizerFactory(DELIM);
         classifier = new TradNaiveBayesClassifier(
                 catSet, tf, catPrior, tokPrior, lengthNorm);
         labeledCorpus.visitTrain(classifier);
@@ -86,10 +87,10 @@ public class NaiveBayesClassifier implements Serializable {
     }
 
     public static void main(String[] args) throws IOException {
-        NaiveBayesClassifier nbc = new NaiveBayesClassifier("./experiment/abstract/train");
+        NaiveBayesClassifier nbc = new NaiveBayesClassifier("exper/abstract/train");
         nbc.train();
         
-        File test = new File("./experiment/abstract/test");
+        File test = new File("exper/abstract/test");
         int c = 0, total = 0;
         for (File cat : test.listFiles()) {
             String trueLabel = cat.getName();

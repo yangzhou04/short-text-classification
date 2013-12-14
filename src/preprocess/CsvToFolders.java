@@ -30,7 +30,24 @@ public class CsvToFolders {
         mDest = dst;
     }
     
-    public void translate() throws IOException {
+    public void translateUnlabeled(String stopwordPath) throws IOException {
+        BufferedReader in = new BufferedReader(new InputStreamReader(
+                new FileInputStream(mSource), "UTF-8"));
+        int i = 0;
+        while (in.ready()) {
+            String text = in.readLine();
+            File f = new File(mDest, String.format("%03d", i++));
+            if (!f.exists()) f.createNewFile();
+            else System.err.println("Warning: " + f + " exists, overwriting happens");
+            BufferedWriter out = new BufferedWriter(new OutputStreamWriter(
+                    new FileOutputStream(f), "UTF-8"));
+            out.append(text);
+            out.close();
+        }
+        in.close();
+    }
+    
+    public void translateLabeled() throws IOException {
         BufferedReader in = new BufferedReader(new InputStreamReader(
                 new FileInputStream(mSource), "UTF-8"));
         catToTexts = new HashMap<String, List<String>>();
@@ -38,9 +55,9 @@ public class CsvToFolders {
             String line = in.readLine();
             String[] splits = line.split("\t");
             
-            if (splits.length == 2) {
+            if (splits.length > 1) {
                 String text = splits[0];
-                String clazz = splits[1];
+                String clazz = splits[splits.length-1];
                 if (catToTexts.containsKey(clazz)) {
                     catToTexts.get(clazz).add(text);
                 } else {
@@ -80,13 +97,17 @@ public class CsvToFolders {
         return catToTexts;
     }
     
-    
     public static void main(String[] args) throws IOException {
-        CsvToFolders trainTranslate = new CsvToFolders("exper/exper3/exper3_train.csv", 
-                "exper/abstracts/exper3/train");
-        trainTranslate.translate();
-        CsvToFolders testTranslate = new CsvToFolders("exper/exper3/exper3_test.csv", 
-                "exper/abstracts/exper3/test");
-        testTranslate.translate();
+        CsvToFolders trainTranslate = new CsvToFolders("exper/exper7/exper7_train.choosed.csv", 
+                "exper/abstracts/exper7/train");
+        
+        trainTranslate.translateLabeled();
+        CsvToFolders testTranslate = new CsvToFolders("exper/exper7/exper7_test.choosed.csv", 
+                "exper/abstracts/exper7/test");
+        testTranslate.translateLabeled();
+        
+//        CsvToFolders unlabeledTranslate = new CsvToFolders("exper/unlabeled/unlabeled.clean.seged.csv", 
+//                "exper/abstracts/unlabeled");
+//        unlabeledTranslate.translateUnlabeled();
     }
 }

@@ -110,10 +110,10 @@ public class SegmentTextTest {
         readStopwords("exper/stopwords.txt");
 //        segmentLabeled("exper/labeled/labeled.old.csv", 
 //                "exper/labeled/labeled.old.clean.seged.csv");
-        segmentLabeled("exper/labeled/labeled.new.csv", 
-                "exper/labeled/labeled.new.clean.seged.csv");
-//        segmentUnlabeled("exper/unlabeled/unlabeled.csv", 
-//                "exper/unlabeled/unlabeled.clean.seged.csv");
+//        segmentLabeled("exper/labeled/labeled.new.csv", 
+//                "exper/labeled/labeled.new.clean.seged.csv");
+        segmentUnlabeled("exper/unlabeled/unlabeled.csv", 
+                "exper/unlabeled/unlabeled.clean.seged.csv");
     }
 
 }
