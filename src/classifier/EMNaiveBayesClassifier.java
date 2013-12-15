@@ -27,34 +27,42 @@ import corpus.UnlabeledCorpus;
 
 public class EMNaiveBayesClassifier implements Serializable {
 
-    private static final long serialVersionUID = 7388561872019002215L;
+    private static final long serialVersionUID = -8117025601326861957L;
     private int mMaxIter;
     private int mMinTokenCount;
     private int mMinImprovement;
     private final String DELIM = "\\P{Z}+";
 
+    private TradNaiveBayesClassifier mClassifier;
+    
     private transient LabeledCorpus mLabeledCorpus;
     private transient UnlabeledCorpus nUnlabeledCorpus;
-    private TradNaiveBayesClassifier mClassifier;
-    private ConfusionMatrix mConfusionMatrix;
-    
-    public EMNaiveBayesClassifier(String labeledDirectory,
-            String unlabeledDirectory) throws IOException, ClassNotFoundException {
-        this(labeledDirectory, unlabeledDirectory, 100, // maximum iteration
-                2,// minimum token count 
-                0); // minimum improvment
-    }
+    private transient ConfusionMatrix mConfusionMatrix;
 
+    /**
+     * Create and Train a 
+     * @param labeledDirectory
+     * @param unlabeledDirectory
+     * @param maxIter
+     * @param minTokenCount
+     * @param minImprovement
+     * @param catPrior
+     * @param tokPrior
+     * @param lengthNorm
+     * @throws IOException
+     * @throws ClassNotFoundException
+     */
     public EMNaiveBayesClassifier(String labeledDirectory,
             String unlabeledDirectory, int maxIter, int minTokenCount,
-            int minImprovement) throws IOException, ClassNotFoundException {
+            int minImprovement, int catPrior, double tokPrior,
+            double lengthNorm) throws IOException, ClassNotFoundException {
         this.mMaxIter = maxIter;
         this.mMinTokenCount = minTokenCount;
         this.mMinImprovement = minImprovement;
         this.mLabeledCorpus = new LabeledCorpus(new File(labeledDirectory, "train"),
                 new File(labeledDirectory, "test"));
         this.nUnlabeledCorpus = new UnlabeledCorpus(unlabeledDirectory);
-        train(100, 0.1, 5);
+        train(catPrior, tokPrior, lengthNorm);
     }
 
     private void train(final double catPrior, final double tokPrior,
@@ -79,10 +87,9 @@ public class EMNaiveBayesClassifier implements Serializable {
         mClassifier = TradNaiveBayesClassifier.emTrain(initClassifier,
                 nbcFactory, mLabeledCorpus, nUnlabeledCorpus, mMinTokenCount,
                 mMaxIter, mMinImprovement, null);
-        
         @SuppressWarnings("unchecked")
-        JointClassifier<CharSequence> compiledClassifier = (JointClassifier<CharSequence>) AbstractExternalizable
-              .compile(mClassifier);
+        JointClassifier<CharSequence> compiledClassifier = 
+            (JointClassifier<CharSequence>) AbstractExternalizable.compile(mClassifier);
         JointClassifierEvaluator<CharSequence> evaluator = new JointClassifierEvaluator<CharSequence>(
               compiledClassifier, mLabeledCorpus.getCatogories(), false);
         mLabeledCorpus.visitTest(evaluator);
@@ -125,7 +132,7 @@ public class EMNaiveBayesClassifier implements Serializable {
         }
     }
 
-    public ConfusionMatrix getConfusionMatrix() throws ClassNotFoundException, IOException {
+    public ConfusionMatrix getConfusionMatrix() {
         return mConfusionMatrix;
     }
     
@@ -133,7 +140,11 @@ public class EMNaiveBayesClassifier implements Serializable {
         return mConfusionMatrix.macroAvgPrecision();
     }
     
-    public double accuracy() {
+    public double totalAccuracy() {
+        return mConfusionMatrix.totalAccuracy();
+    }
+    
+    public double microAccuracy() {
         return mConfusionMatrix.microAverage().accuracy();
     }
     
@@ -149,12 +160,14 @@ public class EMNaiveBayesClassifier implements Serializable {
         return mConfusionMatrix.microAverage().fMeasure();
     }
     
-    public double accuracyDeviation() {
-        return mConfusionMatrix.microAverage().accuracyDeviation();
-    }
-
     public static void save(EMNaiveBayesClassifier emnbc, String path)
             throws IOException {
+        File f = new File(path);
+        if (f.exists())
+            f.delete();
+        f.getParentFile().mkdirs();
+        f.createNewFile();
+        
         FileOutputStream fileOut = new FileOutputStream(path);
         ObjectOutputStream out = new ObjectOutputStream(fileOut);
         out.writeObject(emnbc);
@@ -163,14 +176,15 @@ public class EMNaiveBayesClassifier implements Serializable {
 
     public static EMNaiveBayesClassifier load(String path) {
         try {
-            FileInputStream fileIn = new FileInputStream(path);
-            ObjectInputStream in = new ObjectInputStream(fileIn);
-            Object obj = in.readObject();
-            in.close();
-            fileIn.close();
+            FileInputStream fin = new FileInputStream(path);
+            ObjectInputStream oin = new ObjectInputStream(fin);
+            Object obj = oin.readObject();
+            oin.close();
+            fin.close();
             if (obj instanceof EMNaiveBayesClassifier) {
                 System.out.println("Using model from: " + path);
-                return (EMNaiveBayesClassifier) obj;
+                EMNaiveBayesClassifier emnbc = (EMNaiveBayesClassifier) obj;
+                return emnbc;
             } else
                 return null;
         } catch (FileNotFoundException e1) {
@@ -188,19 +202,22 @@ public class EMNaiveBayesClassifier implements Serializable {
     public static void main(String[] args) throws IOException,
             ClassNotFoundException {
         String storedModelPath = "";
-        EMNaiveBayesClassifier emnbc = EMNaiveBayesClassifier
-                .load(storedModelPath);
+        EMNaiveBayesClassifier emnbc = EMNaiveBayesClassifier.load(storedModelPath);
         if (emnbc == null) {
-            emnbc = new EMNaiveBayesClassifier("exper/abstracts/exper7/",
-                    "exper/abstracts/unlabeled", 100, // maximum iteration
+            emnbc = new EMNaiveBayesClassifier("exper/abstracts/exper6/", // labeled corpus
+                    "exper/abstracts/unlabeled", // unlabeled corpus 
+                    10, // maximum iteration
                     2, // minimum token count 
-                    0); // minimum improvment
+                    0, // minimum improvment
+                    100, // cat prior
+                    2, // token prior
+                    20); // length norm
 //            EMNaiveBayesClassifier.save(emnbc, storedModelPath);
         }
 
-        
-        System.out.println("Accuracy deviation = " + emnbc.accuracyDeviation());
-        System.out.println("Accuracy = " + emnbc.accuracy());
+//        System.out.println("Total accuracy = " + emnbc.totalAccuracy());
+//        System.out.println("Macro accuracy = " + emnbc.macroAvgPrecision());
+        System.out.println("Micro accuracy = " + emnbc.microAccuracy());
         System.out.println("Precision = " + emnbc.precision());
         System.out.println("Recall = " + emnbc.recall());
         System.out.println("Fmeasure = " + emnbc.fmeasure());
