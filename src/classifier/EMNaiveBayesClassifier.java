@@ -136,6 +136,35 @@ public class EMNaiveBayesClassifier implements Serializable {
         return mConfusionMatrix;
     }
     
+    
+    public double macroAvgAccuracy() throws IOException {
+        int catCount = mLabeledCorpus.getCatogories().length;
+        double total = 0;
+        int effectiveCount = 0;
+        for (int i = 0; i < catCount; i++) {
+            double pi = mConfusionMatrix.oneVsAll(i).accuracy();
+            if (!Double.isNaN(pi)) {
+                total += pi;
+                effectiveCount++;
+            }
+        }
+        return total / effectiveCount;
+    }
+    
+    public double macroAvgPrecisionExceptNaN() throws IOException {
+        int catCount = mLabeledCorpus.getCatogories().length;
+        double total = 0;
+        int effectiveCount = 0;
+        for (int i = 0; i < catCount; i++) {
+            double pi = mConfusionMatrix.oneVsAll(i).precision();
+            if (!Double.isNaN(pi)) {
+                total += pi;
+                effectiveCount++;
+            }
+        }
+        return total / effectiveCount;
+    }
+    
     public double macroAvgPrecision() {
         return mConfusionMatrix.macroAvgPrecision();
     }
@@ -148,15 +177,15 @@ public class EMNaiveBayesClassifier implements Serializable {
         return mConfusionMatrix.microAverage().accuracy();
     }
     
-    public double precision() {
+    public double microPrecision() {
         return mConfusionMatrix.microAverage().precision();
     }
     
-    public double recall() {
+    public double microRecall() {
         return mConfusionMatrix.microAverage().recall();
     }
     
-    public double fmeasure() {
+    public double microFmeasure() {
         return mConfusionMatrix.microAverage().fMeasure();
     }
     
@@ -201,26 +230,28 @@ public class EMNaiveBayesClassifier implements Serializable {
 
     public static void main(String[] args) throws IOException,
             ClassNotFoundException {
-        String storedModelPath = "";
+        String storedModelPath = "exper/abstracts/exper1/";
         EMNaiveBayesClassifier emnbc = EMNaiveBayesClassifier.load(storedModelPath);
         if (emnbc == null) {
             emnbc = new EMNaiveBayesClassifier("exper/abstracts/exper6/", // labeled corpus
-                    "exper/abstracts/unlabeled", // unlabeled corpus 
-                    10, // maximum iteration
-                    2, // minimum token count 
-                    0, // minimum improvment
-                    100, // cat prior
-                    2, // token prior
+                    "exper/abstracts/unlabeled", // unlabeled corpus
+                    100, // maximum iteration
+                    1, // minimum token count
+                    1, // minimum improvment
+                    1000, // cat prior
+                    1, // token prior
                     20); // length norm
 //            EMNaiveBayesClassifier.save(emnbc, storedModelPath);
         }
 
-//        System.out.println("Total accuracy = " + emnbc.totalAccuracy());
-//        System.out.println("Macro accuracy = " + emnbc.macroAvgPrecision());
+        System.out.println(emnbc.getConfusionMatrix());
+        System.out.println("Macro accuracy = " + emnbc.macroAvgPrecision());
+        System.out.println("Macro accuracy without NaN = " + emnbc.macroAvgPrecisionExceptNaN());
         System.out.println("Micro accuracy = " + emnbc.microAccuracy());
-        System.out.println("Precision = " + emnbc.precision());
-        System.out.println("Recall = " + emnbc.recall());
-        System.out.println("Fmeasure = " + emnbc.fmeasure());
+        System.out.println("Total accuracy = " + emnbc.totalAccuracy());
+        System.out.println("Micro precision = " + emnbc.microPrecision());
+        System.out.println("Micro recall = " + emnbc.microRecall());
+        System.out.println("Micro fmeasure = " + emnbc.microFmeasure());
     }
 
 }

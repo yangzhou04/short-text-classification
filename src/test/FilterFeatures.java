@@ -54,8 +54,8 @@ public class FilterFeatures {
         choosedFeatureList = Features.chooseTop(featureList, 0.25);
 //        filter("exper/exper6/exper6_train.csv", "exper/exper6/exper6_train.choosed.csv");
 //        filter("exper/exper6/exper6_test.csv", "exper/exper6/exper6_test.choosed.csv");
-        filter("exper/exper6/exper6_test.csv", "exper/exper6/exper6_test.choosed.csv");
-        filter("exper/exper6/exper6_train.csv", "exper/exper6/exper6_train.choosed.csv");
+        filter("exper/exper7/exper7_test.csv", "exper/exper7/exper7_test.choosed.csv");
+//        filter("exper/exper6/exper6_train.csv", "exper/exper6/exper6_train.choosed.csv");
     }
 
 }
