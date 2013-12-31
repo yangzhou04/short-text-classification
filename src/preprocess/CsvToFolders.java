@@ -30,7 +30,7 @@ public class CsvToFolders {
         mDest = dst;
     }
     
-    public void translateUnlabeled(String stopwordPath) throws IOException {
+    public void translateUnlabeled() throws IOException {
         BufferedReader in = new BufferedReader(new InputStreamReader(
                 new FileInputStream(mSource), "UTF-8"));
         int i = 0;
@@ -98,16 +98,16 @@ public class CsvToFolders {
     }
     
     public static void main(String[] args) throws IOException {
-        CsvToFolders trainTranslate = new CsvToFolders("exper/exper7/exper7_train.choosed.csv", 
-                "exper/abstracts/exper7/train");
+//        CsvToFolders trainTranslate = new CsvToFolders("exper/exper7/exper7_train.choosed.csv", 
+//                "exper/abstracts/exper7/train");
+//        
+//        trainTranslate.translateLabeled();
+//        CsvToFolders testTranslate = new CsvToFolders("exper/exper7/exper7_test.choosed.csv", 
+//                "exper/abstracts/exper7/test");
+//        testTranslate.translateLabeled();
         
-        trainTranslate.translateLabeled();
-        CsvToFolders testTranslate = new CsvToFolders("exper/exper7/exper7_test.choosed.csv", 
-                "exper/abstracts/exper7/test");
-        testTranslate.translateLabeled();
-        
-//        CsvToFolders unlabeledTranslate = new CsvToFolders("exper/unlabeled/unlabeled.clean.seged.csv", 
-//                "exper/abstracts/unlabeled");
-//        unlabeledTranslate.translateUnlabeled();
+        CsvToFolders unlabeledTranslate = new CsvToFolders("exper3/unlabeled.clean.seged.csv", 
+                "exper3/unlabeled");
+        unlabeledTranslate.translateUnlabeled();
     }
 }

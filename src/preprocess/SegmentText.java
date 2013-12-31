@@ -20,6 +20,7 @@ public class SegmentText {
     private static Segmenter seg = new Segmenter();
     private static Tagger tagger = new Tagger();
     
+    
     public static void segmentLabeled(String src, String dst) throws IOException {
         BufferedReader in = new BufferedReader(new InputStreamReader(
                 new FileInputStream(src), "UTF-8"));
@@ -105,12 +106,13 @@ public class SegmentText {
     
     public static void main(String[] args) throws IOException {
         SegmentText.readStopwords("exper/stopwords.txt");
+        
 //        segmentLabeled("exper/labeled/labeled.old.csv", 
 //                "exper/labeled/labeled.old.clean.seged.csv");
 //        segmentLabeled("exper/labeled/labeled.new.csv", 
 //                "exper/labeled/labeled.new.clean.seged.csv");
-        SegmentText.segmentUnlabeled("exper/unlabeled/unlabeled.csv", 
-                "exper/unlabeled/unlabeled.clean.seged.csv");
+//        SegmentText.segmentUnlabeled("exper/unlabeled/unlabeled.csv", 
+//                "exper/unlabeled/unlabeled.clean.seged.csv");
     }
 
 }

@@ -230,15 +230,15 @@ public class EMNaiveBayesClassifier implements Serializable {
 
     public static void main(String[] args) throws IOException,
             ClassNotFoundException {
-        String storedModelPath = "exper/abstracts/exper1/";
+        String storedModelPath = "exper3/8_2/";
         EMNaiveBayesClassifier emnbc = EMNaiveBayesClassifier.load(storedModelPath);
         if (emnbc == null) {
-            emnbc = new EMNaiveBayesClassifier("exper/abstracts/exper6/", // labeled corpus
-                    "exper/abstracts/unlabeled", // unlabeled corpus
+            emnbc = new EMNaiveBayesClassifier("exper3/8_2/", // labeled corpus
+                    "exper3/unlabeled", // unlabeled corpus
                     100, // maximum iteration
                     1, // minimum token count
                     1, // minimum improvment
-                    1000000000, // cat prior
+                    1000000, // cat prior
                     1, // token prior
                     20); // length norm
 //            EMNaiveBayesClassifier.save(emnbc, storedModelPath);

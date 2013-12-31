@@ -12,7 +12,7 @@ import classifier.EMNaiveBayesClassifier;
 public class Exper2 {
 
     public static void main(String[] args) throws IOException, ClassNotFoundException {
-        final String DIR = "exper2/";
+        final String DIR = "exper3/";
 //        SegmentText.readStopwords("exper2/stopwords.txt");
 //        SegmentText.segmentLabeled("exper2/all.csv", "exper2/all.seged.csv");
         for (int i = 1; i < 10; i++) {
@@ -27,7 +27,7 @@ public class Exper2 {
             final String TRAIN_FILE = DIR+SUB_DIR+"train.csv";
             final String TEST_FILE = DIR+SUB_DIR+"test.csv";
             
-            Sampler.sample("exper2/all.seged.csv", TRAIN_FILE, TEST_FILE, 1-testPercent);
+            Sampler.sample(DIR + "all.topic.csv", TRAIN_FILE, TEST_FILE, 1-testPercent);
             
             final String TRAIN_FOLDER = DIR+SUB_DIR+"train/";
             final String TEST_FOLDER = DIR+SUB_DIR+"test/";
@@ -57,7 +57,6 @@ public class Exper2 {
             System.out.println("Micro fmeasure = " + emnbc.microFmeasure());
             emnbc.printCategoriesAprioriProbability();
         }
-        
     }
 
 }
