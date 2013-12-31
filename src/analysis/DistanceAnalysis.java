@@ -75,13 +75,14 @@ public class DistanceAnalysis {
             System.out.print(className);
             System.out.print("\t");
         }
-        System.out.println();
+        System.out.println("总和");
         
         String[] classNameArr = wordDistributionOfPerClass.keySet().toArray(new String[0]);
         
         for (String className : classNameArr) {
             Map<String, Double> class1 = wordDistributionOfPerClass.get(className);
             System.out.print(className + "\t");
+            double totalDist = 0;
             for (String className2 : classNameArr) {
                     Map<String, Double> class2 = wordDistributionOfPerClass.get(className2);
                     int i = 0;
@@ -94,15 +95,23 @@ public class DistanceAnalysis {
                         i++;
                     }
                     double dist = Distance.KullbackLeibler(p, q);
+                    totalDist+= dist;
                     System.out.print(String.format("%.2f", dist));
                     System.out.print("\t");
             }
-            System.out.println();
+            System.out.println(String.format("%.2f", totalDist));
         }
     }
     
+//    public static void distBetweenExper6AndExper7Test() throws IOException {
+//        Map<String, Map<String, Double>> wordDistributionOfPerClass = 
+//                getWordDistributionOfPerClass("exper/exper6/exper6_test.choosed.csv");
+//        Map<String, Map<String, Double>> wordDistributionOfPerClass2 = 
+//                getWordDistributionOfPerClass("exper/exper7/exper7_test.choosed.csv");
+//    }
+    
     public static void main(String[] args) throws IOException {
-        
+        distInExper6Test();
     }
 
 }

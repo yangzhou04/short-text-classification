@@ -16,6 +16,7 @@ public class Sampler {
 
     public static void sample(String csv, String test, String train, double percent)
             throws IOException {
+        
         BufferedReader br = new BufferedReader(new InputStreamReader(
                 new FileInputStream(csv), "UTF-8"));
 
@@ -27,9 +28,15 @@ public class Sampler {
         Collections.shuffle(data);
         int n1 = (int) (data.size() * percent);
         File part1File = new File(test);
-        if (!part1File.exists()) part1File.createNewFile();
+        if (!part1File.exists()) {
+            part1File.getParentFile().mkdirs();
+            part1File.createNewFile();
+        }
         File part2File = new File(train);
-        if (!part2File.exists()) part1File.createNewFile();
+        if (!part2File.exists()) {
+            part2File.getParentFile().mkdirs();
+            part2File.createNewFile();
+        }
         
         BufferedWriter bw1 = new BufferedWriter(new OutputStreamWriter(
                 new FileOutputStream(test), "UTF-8"));
@@ -48,7 +55,8 @@ public class Sampler {
     }
 
     public static void main(String[] args) throws IOException {
-        Sampler.sample("exper/labeled/labeled.old.clean.seged.csv", 
-                "./exper/exper1_test.csv", "./exper/exper1_train.csv", 0.2);
+        double testPercent = 0.6;
+        Sampler.sample("exper2/all.csv", 
+                "exper2/test.csv", "exper2/train.csv", testPercent);
     }
 }

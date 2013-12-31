@@ -52,7 +52,7 @@ public class SvmClassifier {
     public static void main(String[] args) throws Exception {
         // System.setOut(new PrintStream("./svm.txt"));
         DataSource source = new DataSource(
-                "./experiment/abstract/2class_full.arff");
+                "experiment/abstract/2class_full.arff");
         // System.out.println(source.getStructure());
         Instances data = source.getDataSet();
         if (data.classIndex() == -1)

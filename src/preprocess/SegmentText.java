@@ -1,4 +1,4 @@
-package test;
+package preprocess;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -12,13 +12,10 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
-import preprocess.Segmenter;
-import preprocess.Tagger;
-import preprocess.TextFilter;
 import edu.stanford.nlp.ling.TaggedWord;
 import edu.stanford.nlp.ling.Word;
 
-public class SegmentTextTest {
+public class SegmentText {
     private static Set<String> stopwordSet = new TreeSet<String>();
     private static Segmenter seg = new Segmenter();
     private static Tagger tagger = new Tagger();
@@ -107,12 +104,12 @@ public class SegmentTextTest {
     }
     
     public static void main(String[] args) throws IOException {
-        readStopwords("exper/stopwords.txt");
+        SegmentText.readStopwords("exper/stopwords.txt");
 //        segmentLabeled("exper/labeled/labeled.old.csv", 
 //                "exper/labeled/labeled.old.clean.seged.csv");
 //        segmentLabeled("exper/labeled/labeled.new.csv", 
 //                "exper/labeled/labeled.new.clean.seged.csv");
-        segmentUnlabeled("exper/unlabeled/unlabeled.csv", 
+        SegmentText.segmentUnlabeled("exper/unlabeled/unlabeled.csv", 
                 "exper/unlabeled/unlabeled.clean.seged.csv");
     }
 

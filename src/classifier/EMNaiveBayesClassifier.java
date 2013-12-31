@@ -238,7 +238,7 @@ public class EMNaiveBayesClassifier implements Serializable {
                     100, // maximum iteration
                     1, // minimum token count
                     1, // minimum improvment
-                    1000, // cat prior
+                    1000000000, // cat prior
                     1, // token prior
                     20); // length norm
 //            EMNaiveBayesClassifier.save(emnbc, storedModelPath);
@@ -252,6 +252,7 @@ public class EMNaiveBayesClassifier implements Serializable {
         System.out.println("Micro precision = " + emnbc.microPrecision());
         System.out.println("Micro recall = " + emnbc.microRecall());
         System.out.println("Micro fmeasure = " + emnbc.microFmeasure());
+        emnbc.printCategoriesAprioriProbability();
     }
 
 }

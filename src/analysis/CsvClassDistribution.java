@@ -57,7 +57,7 @@ public class CsvClassDistribution {
     }
     
     public static void main(String[] args) throws IOException {
-        CsvClassDistribution dist1 = new CsvClassDistribution("exper/exper7/exper7_test.csv");
+        CsvClassDistribution dist1 = new CsvClassDistribution("exper2/test.csv");
         System.out.println(dist1.getCount());
         System.out.println(dist1.getDistribution());
     }

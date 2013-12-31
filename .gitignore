@@ -7,7 +7,7 @@
 /bin
 /data
 
-/exper
+/exper*
 .classpath
 .project
 *.7z
