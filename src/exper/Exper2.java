@@ -39,11 +39,11 @@ public class Exper2 {
             testTranslate.translateLabeled();
             
             EMNaiveBayesClassifier emnbc = new EMNaiveBayesClassifier(DIR+SUB_DIR, // labeled corpus
-                    "exper/abstracts/unlabeled", // unlabeled corpus
+                    DIR + "unlabeled", // unlabeled corpus
                     100, // maximum iteration
                     1, // minimum token count
-                    1, // minimum improvment
-                    100000000, // cat prior
+                    1, // minimum improvement
+                    100000, // cat prior
                     1, // token prior
                     20); // length norm
             

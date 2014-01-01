@@ -37,7 +37,10 @@ public class CsvToFolders {
         while (in.ready()) {
             String text = in.readLine();
             File f = new File(mDest, String.format("%03d", i++));
-            if (!f.exists()) f.createNewFile();
+            if (!f.exists()) {
+                f.getParentFile().mkdirs();
+                f.createNewFile();
+            }
             else System.err.println("Warning: " + f + " exists, overwriting happens");
             BufferedWriter out = new BufferedWriter(new OutputStreamWriter(
                     new FileOutputStream(f), "UTF-8"));
@@ -106,8 +109,8 @@ public class CsvToFolders {
 //                "exper/abstracts/exper7/test");
 //        testTranslate.translateLabeled();
         
-        CsvToFolders unlabeledTranslate = new CsvToFolders("exper3/unlabeled.clean.seged.csv", 
-                "exper3/unlabeled");
+        CsvToFolders unlabeledTranslate = new CsvToFolders("exper2/unlabeled.clean.seged.csv", 
+                "exper2/unlabeled/");
         unlabeledTranslate.translateUnlabeled();
     }
 }
