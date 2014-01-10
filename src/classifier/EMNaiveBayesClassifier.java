@@ -38,20 +38,7 @@ public class EMNaiveBayesClassifier implements Serializable {
     private transient LabeledCorpus mLabeledCorpus;
     private transient UnlabeledCorpus nUnlabeledCorpus;
     private transient ConfusionMatrix mConfusionMatrix;
-
-    /**
-     * Create and Train a 
-     * @param labeledDirectory
-     * @param unlabeledDirectory
-     * @param maxIter
-     * @param minTokenCount
-     * @param minImprovement
-     * @param catPrior
-     * @param tokPrior
-     * @param lengthNorm
-     * @throws IOException
-     * @throws ClassNotFoundException
-     */
+    
     public EMNaiveBayesClassifier(String labeledDirectory,
             String unlabeledDirectory, int maxIter, int minTokenCount,
             int minImprovement, int catPrior, double tokPrior,
@@ -233,9 +220,9 @@ public class EMNaiveBayesClassifier implements Serializable {
 //        String storedModelPath = "exper3/8_2/";
 //        EMNaiveBayesClassifier emnbc = EMNaiveBayesClassifier.load(storedModelPath);
 //        if (emnbc == null) {
-        final String DIR = "exper2/";
+        final String DIR = "exper3/";
          EMNaiveBayesClassifier emnbc = new EMNaiveBayesClassifier(DIR + "8_2/", // labeled corpus
-                    "exper2/unlabeled", // unlabeled corpus
+                    DIR+"empty", // unlabeled corpus
                     100, // maximum iteration
                     1, // minimum token count
                     1, // minimum improvment

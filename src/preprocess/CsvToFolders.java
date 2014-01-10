@@ -105,12 +105,12 @@ public class CsvToFolders {
 //                "exper/abstracts/exper7/train");
 //        
 //        trainTranslate.translateLabeled();
-//        CsvToFolders testTranslate = new CsvToFolders("exper/exper7/exper7_test.choosed.csv", 
-//                "exper/abstracts/exper7/test");
-//        testTranslate.translateLabeled();
+        CsvToFolders testTranslate = new CsvToFolders("exper/exper7/exper7_test.choosed.csv", 
+                "exper/abstracts/exper7/test");
+        testTranslate.translateLabeled();
         
-        CsvToFolders unlabeledTranslate = new CsvToFolders("exper2/unlabeled.clean.seged.csv", 
-                "exper2/unlabeled/");
-        unlabeledTranslate.translateUnlabeled();
+//        CsvToFolders unlabeledTranslate = new CsvToFolders("exper2/unlabeled.clean.seged.csv", 
+//                "exper2/unlabeled/");
+//        unlabeledTranslate.translateUnlabeled();
     }
 }

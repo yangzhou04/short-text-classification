@@ -14,6 +14,39 @@ import java.util.List;
 
 public class Sampler {
 
+    public static void foldN(String src, String dstDir, int N) throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(
+                new FileInputStream(src), "UTF-8"));
+        
+        List<String> data = new LinkedList<String>();
+        int lineNum = 0;
+        while (br.ready()) {
+            data.add(br.readLine());
+            lineNum++;
+        }
+        br.close();
+
+        Collections.shuffle(data);
+        int step = lineNum / N;
+        int[] bounds = new int[N+1];
+        for (int i = 0; i < N+1; i++)
+            bounds[i] = step*i;
+        
+        
+        for (int i = 0; i < N; i++) {
+            File dstFile = new File(new File(dstDir).getPath() + "/cross" + i + ".csv");
+            
+            BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(
+                    new FileOutputStream(dstFile), "UTF-8"));
+            int ceil = bounds[i+1], floor = bounds[i];
+            for (int j = floor; j < ceil; j++) {
+                bw.append(data.get(j));
+                bw.newLine();
+            }
+            bw.close();
+        }
+    }
+    
     public static void sample(String csv, String test, String train, double percent)
             throws IOException {
         
@@ -55,8 +88,10 @@ public class Sampler {
     }
 
     public static void main(String[] args) throws IOException {
-        double testPercent = 0.6;
-        Sampler.sample("exper2/all.csv", 
-                "exper2/test.csv", "exper2/train.csv", testPercent);
+//        double testPercent = 0.33;
+//        Sampler.sample("exper4/tmp.csv", 
+//                "exper4/cross2.csv", "exper4/tmp2.csv", testPercent);
+        Sampler.foldN("exper4/all.seged.csv", "exper4/", 5);
+        
     }
 }
